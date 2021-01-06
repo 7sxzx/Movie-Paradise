@@ -56,7 +56,7 @@ export default class InitManager {
     })
   }
 
-  private static async initLoadDatabase (): Promise<void> {
+  public static async initLoadDatabase (): Promise<void> {
     try {
       await connect
       console.log('Connection has been established successfully.')
@@ -65,7 +65,7 @@ export default class InitManager {
     }
   }
 
-  private static async initLoadGraphQL (): Promise<void> {
+  public static async initLoadGraphQL (): Promise<void> {
     const schema = await buildSchema({
       resolvers: [MovieResolver]
     })
