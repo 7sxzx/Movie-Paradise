@@ -14,7 +14,7 @@ export default createConnections([{
   database: database,
   entities: [path.resolve(__dirname, '../entity/*.*')],
   // DO NOT enable in production
-  // synchronize: sync,
+  synchronize: sync,
   logging: logging
 }, {
   name: 'mongodb',
@@ -23,7 +23,8 @@ export default createConnections([{
   host: config.mongodb.host,
   port: config.mongodb.port,
   database: config.mongodb.database,
-  entities: [path.resolve(__dirname, '../entity/mongodb/*.*')]
+  entities: [path.resolve(__dirname, '../entity/mongodb/*.*')],
   // DO NOT enable in production
-  // synchronize: config.mongodb.sync
+  synchronize: config.mongodb.sync,
+  logging: config.mongodb.logging
 }])

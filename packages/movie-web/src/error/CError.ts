@@ -1,4 +1,4 @@
-import { IncomingMessage } from 'http'
+import Koa from 'koa'
 
 export default class CError extends Error {
   public message: string
@@ -14,10 +14,10 @@ export default class CError extends Error {
     this.detail = detail
   }
 
-  public setMessage (request: IncomingMessage): void {
+  public setMessage (request: Koa.Request): void {
     // default English
     this.message = this.locale['en-US']
-    const language = request.headers['accept-language']
+    const language: string = request.headers['accept-language']
     if (language === undefined) return
     if (language.includes('zh')) {
       this.message = this.locale['zh-CN']

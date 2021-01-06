@@ -1,4 +1,5 @@
 // inspired by https://github.com/LFB/nodejs-koa-blog
+import Koa from 'koa'
 import connect from './db'
 import path from 'path'
 import cors from '@koa/cors'
@@ -7,27 +8,32 @@ import config from '../config'
 import CError from '../error/CError'
 import logger from './log4js'
 import koaBody from 'koa-body'
+import { ApolloServer } from 'apollo-server-koa'
+import { buildSchema } from 'type-graphql'
+import MovieResolver from '../graphql/movie'
 
 export default class InitManager {
-  private static app: any
+  private static app: Koa<Koa.DefaultState, Koa.DefaultContext>
   public static initCore (app): void {
     InitManager.app = app
     ;(async () => {
       await InitManager.initLoadErrorHandler()
       await InitManager.initLoadDatabase()
+      await InitManager.initLoadGraphQL()
       await InitManager.initLoadCORS()
       await InitManager.initLoadFileSupport()
       await InitManager.initLoadRouters()
       InitManager.app.listen(config.port, () => {
-        console.log(`listen at http://localhost:${config.port}`)
-        console.log(`swagger at http://localhost:${config.port}/swagger-html`)
+        console.log(`server listen at http://localhost:${config.port}`)
+        console.log(`graphql listen at http://localhost:${config.port}/${config.graphqlPath}`)
+        console.log(`swagger listen at http://localhost:${config.port}/swagger-html`)
       })
     })().catch(err => {
       console.error(err)
     })
   }
 
-  public static async initLoadErrorHandler (): Promise<void> {
+  private static async initLoadErrorHandler (): Promise<void> {
     InitManager.app.use(async (ctx, next) => {
       try {
         ctx.auth = ctx.request.header.authorization
@@ -50,13 +56,21 @@ export default class InitManager {
     })
   }
 
-  public static async initLoadDatabase (): Promise<void> {
+  private static async initLoadDatabase (): Promise<void> {
     try {
       await connect
       console.log('Connection has been established successfully.')
     } catch (err) {
       console.error('Unable to connect to the database:', err)
     }
+  }
+
+  private static async initLoadGraphQL (): Promise<void> {
+    const schema = await buildSchema({
+      resolvers: [MovieResolver]
+    })
+    const server = new ApolloServer({ schema })
+    InitManager.app.use(server.getMiddleware())
   }
 
   private static async initLoadCORS (): Promise<void> {

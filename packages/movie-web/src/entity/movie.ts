@@ -11,34 +11,44 @@ import {
   PrimaryColumn,
   UpdateDateColumn
 } from 'typeorm'
+import { Field, ID, Int, ObjectType } from 'type-graphql'
 
 @Entity()
+@ObjectType()
 export default class Movie extends BaseEntity {
+  @Field(type => ID)
   @PrimaryColumn()
   _id: number
 
+  @Field({ nullable: true })
   @Column({ nullable: true })
   imdb_id: string
 
+  @Field()
   @Index('movie_title')
   @Column()
   title: string
 
+  @Field({ nullable: true })
   @Index('movie_title_en')
   @Column({ nullable: true })
   title_en: string
 
+  @Field(type => Int)
   @Column()
   year: number
 
   // Data redundancy for index
+  @Field()
   @Index('movie_release')
   @Column()
   release: Date
 
+  @Field()
   @Column()
   poster: string
 
+  @Field()
   @Index('movie_path')
   @Column({ unique: true })
   path: string
@@ -91,9 +101,11 @@ export default class Movie extends BaseEntity {
     width: number
   }>
 
+  @Field()
   @CreateDateColumn()
   create_time: Date
 
+  @Field()
   @UpdateDateColumn()
   update_time: Date
 
