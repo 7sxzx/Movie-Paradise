@@ -2,7 +2,7 @@ import { Query, Resolver } from 'type-graphql'
 import Movie from '../entity/Movie'
 import MovieServiceImpl from '../service/movie-service'
 
-@Resolver(Movie)
+@Resolver(of => Movie)
 export default class MovieResolver {
   constructor (private readonly movieService: MovieServiceImpl) {
     if (movieService === undefined) {
